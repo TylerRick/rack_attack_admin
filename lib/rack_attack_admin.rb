@@ -1,6 +1,5 @@
 require "rack_attack_admin/version"
+require "rack_attack_admin/engine"
 
 module RackAttackAdmin
-  class Error < StandardError; end
-  # Your code goes here...
 end
