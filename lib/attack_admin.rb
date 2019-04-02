@@ -1,5 +1,5 @@
 require "attack_admin/engine"
 
-module AttackAdmin
+module RackAttackAdmin
   # Your code goes here...
 end

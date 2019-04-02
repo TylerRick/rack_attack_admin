@@ -6,9 +6,9 @@ require "rack_attack_admin/version"
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
   spec.name        = "rack_attack_admin"
-  spec.version     = AttackAdmin::VERSION
+  spec.version     = RackAttackAdmin::VERSION
   spec.authors     = [""]
   spec.email       = ["tyler@tylerrick.com"]
-  spec.summary     = "Summary of AttackAdmin."
+  spec.summary     = "Summary of RackAttackAdmin."
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 end
