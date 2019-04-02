@@ -8,6 +8,7 @@ module RackAttackAdmin
       @banned_ip_keys = Rack::Attack::Fail2Ban.banned_ip_keys
       @counters_h     = Rack::Attack.counters_h.
         without(*Rack::Attack::BannedIps.keys)
+      render
     end
 
     def current_request
