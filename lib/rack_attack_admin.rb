@@ -3,6 +3,8 @@
 #require "rack_attack_admin/engine"
 require "attack_admin/engine"
 
+require 'haml'
+
 require_relative 'rack/attack_extensions'
 
 module RackAttackAdmin
