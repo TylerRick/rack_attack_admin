@@ -1,7 +1,7 @@
 $:.push File.expand_path("lib", __dir__)
 
 # Maintain your gem's version:
-require "attack_admin/version"
+require "rack_attack_admin/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
