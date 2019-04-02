@@ -1,4 +1,4 @@
-SimpleChurchApp::Application.routes.draw do
+RackAttackAdmin::Engine.routes.draw do
   namespace :admin do
     get :rack_attack, to: 'rack_attack#index'
     namespace :rack_attack do

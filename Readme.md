@@ -4,7 +4,7 @@ Inspired by: https://www.backerkit.com/blog/building-a-rackattack-dashboard/
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's `Gemfile`:
 
 ```ruby
 gem 'rack_attack_admin'
@@ -14,9 +14,12 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
 
-    $ gem install rack_attack_admin
+Add this line to your application's `config/routes.rb`:
+
+```ruby
+mount RackAttackAdmin::Engine, at: '/admin/rack_attack'
+```
 
 ## Usage
 
