@@ -11,6 +11,6 @@
       - interval = Rack::Attack.cache.store.ttl("#{Rack::Attack.cache.prefix}:#{key}")
       - if interval
         =# distance_of_time_in_words(interval)
-        in #{ActiveSupport::Duration.build(interval)&.human_to_s}
+        in #{ActiveSupport::Duration.build(interval)&.human_str}
 
   %td= link_to 'Delete', rack_attack_admin.banned_ip_path(key), method: :delete, class: 'btn'

@@ -81,7 +81,7 @@
               (time_range.end - Time.now)
             end
         - if interval
-          in #{ActiveSupport::Duration.build(interval)&.human_to_s}<br/>
+          in #{byebug; ActiveSupport::Duration.build(interval)&.human_str}<br/>
 
         - if parsed and time_range = parsed[:time_range]
           %small
@@ -89,7 +89,7 @@
             %span><
               \-
             #{time_range.end  .to_s(:time_with_s)}
-            \= #{time_range.duration&.human_to_s})
+            \= #{time_range.duration&.human_str})
 
       %td= link_to 'Delete', rack_attack_admin.key_path(key), method: :delete, class: 'btn'
 .current_time.mb-2 (Current time: #{Time.now.to_s(:time_with_s)})
