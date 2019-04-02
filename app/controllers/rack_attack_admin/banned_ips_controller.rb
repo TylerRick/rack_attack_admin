@@ -19,9 +19,9 @@ module RackAttackAdmin
       end
       if ban.valid?
         Rack::Attack::BannedIps.ban! ban.ip, ban.bantime
-        redirect_to [:admin, :rack_attack], success: "Added: #{ban.ip}"
+        redirect_to [rack_attack_admin, :rack_attack], success: "Added: #{ban.ip}"
       else
-        redirect_to [:admin, :rack_attack], alert: "Failed to add: #{ban.errors.full_messages}"
+        redirect_to [rack_attack_admin, :rack_attack], alert: "Failed to add: #{ban.errors.full_messages}"
       end
     end
   end

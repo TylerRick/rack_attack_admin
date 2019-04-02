@@ -8,13 +8,13 @@
         %th Expires
       %th Actions
 
-  = render partial: 'admin/rack_attack/banned_ips/banned_ip',
+  = render partial: 'rack_attack_admin/banned_ips/banned_ip',
     collection: Rack::Attack::BannedIps.keys, as: 'key',
     locals: { _:nil,
       full_key_prefix: Rack::Attack::BannedIps.full_key_prefix,
     }
 
-  = form_for @default_banned_ip, url: [:admin, :rack_attack, :banned_ips] do |f|
+  = form_for @default_banned_ip, url: [rack_attack_admin, :banned_ips] do |f|
     %tr
       %td Add new:
       %td= f.text_field :ip
@@ -31,6 +31,7 @@
         %th Expires
       %th Actions
 
+-#
   = render partial: 'admin/rack_attack/banned_ips/banned_ip',
     collection: @banned_ip_keys, as: 'key',
     locals: { _:nil,
@@ -88,7 +89,7 @@
         = value
         - if limit
           = "/#{limit}"
-      %td= link_to 'Delete', admin_rack_attack_key_path(key), method: :delete, class: 'btn'
+      %td= link_to 'Delete', rack_attack_admin.key_path(key), method: :delete, class: 'btn'
 .current_time.mb-2 (Current time: #{Time.now.to_s(:time_with_s)})
 
 %h1 Flags
