@@ -1,7 +1,7 @@
 load 'rack/attack_extensions.rb' if Rails.env.development?
 
 module RackAttackAdmin
-  class RackAttackController < ApplicationController
+  class RackAttackController < RackAttackAdmin::ApplicationController
     # Web version of lib/tasks/rack_attack_admin_tasks.rake
     def index
       @default_banned_ip = Rack::Attack::BannedIp.new(bantime: '60 m')
