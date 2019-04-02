@@ -1,4 +1,3 @@
-byebug
 RackAttackAdmin::Engine.routes.draw do
   root to: 'rack_attack#index'
   get :current_request, to: 'rack_attack#current_request'
