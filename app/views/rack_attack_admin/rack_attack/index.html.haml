@@ -65,6 +65,8 @@
         end
       if parsed
         time_range = parsed[:time_range]
+      end
+      if time_range
         human_duration = time_range.duration&.human_str
       end
     %tr
@@ -76,7 +78,7 @@
       %td= parsed[:discriminator]
 
       - limit = parsed && (rule = parsed[:rule]) && rule.limit.to_i
-      - over_limit = value >= limit
+      - over_limit = limit && value >= limit
       %td{class: ('over_limit' if over_limit), style: ('color: red' if over_limit)}
         = value
         <br/>
