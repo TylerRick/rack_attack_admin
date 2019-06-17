@@ -6,8 +6,16 @@ class Rack::Attack
   class << self
     extend Memoist
 
+    def all_keys
+      store = cache.store
+      # Why does ActiveSupport::Cache::RedisCacheStore (from rails) not respnod to keys directly,
+      # but ActiveSupport::Cache::RedisStore (from redis-rails) did?
+      store = store.redis if store.respond_to?(:redis)
+      store.keys
+    end
+
     def prefixed_keys
-      cache.store.keys.grep(/^rack::attack:/)
+      all_keys.grep(/^rack::attack:/)
     end
 
     # AKA unprefixed_keys
@@ -231,7 +239,7 @@ class Rack::Attack
 
     class << self
       def prefixed_keys
-        cache.store.keys.grep(/^#{cache.prefix}:(allow|fail)2ban:/)
+        Rack::Attack.all_keys.grep(/^#{cache.prefix}:(allow|fail)2ban:/)
       end
 
       # AKA unprefixed_keys
@@ -273,7 +281,7 @@ class Rack::Attack
   class BannedIps
     class << self
       def prefixed_keys
-        cache.store.keys.grep(/^#{full_key_prefix}:/)
+        Rack::Attack.all_keys.grep(/^#{full_key_prefix}:/)
       end
 
       # Removes only the Rack::Attack.cache.prefix
