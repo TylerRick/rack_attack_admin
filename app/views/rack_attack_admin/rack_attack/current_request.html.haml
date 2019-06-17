@@ -1,0 +1,10 @@
+%h1 Current Request
+%table.table.table-striped
+  %thead
+    %tr
+      %th Key
+      %th Value
+  - current_request_rack_attack_stats.each do |key, value|
+    %tr
+      %td= key
+      %td= value
