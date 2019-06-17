@@ -20,16 +20,6 @@ class Rack::Attack
       end
     end
 
-    # The same as cache.prefix but prefixed with "{namespace}:" if namespace option is set.
-    # Like cache.prefix, this does not include the trailing ':'.
-    def cache.prefix
-      prefix = cache.prefix
-      if namespace = cache.store&.options&.[](:namespace)
-        prefix = "#{namespace}:#{prefix}"
-      end
-      prefix
-    end
-
     def prefixed_keys
       all_keys.grep(/^#{cache.prefix}:/)
     end
