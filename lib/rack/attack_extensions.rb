@@ -16,7 +16,7 @@ class Rack::Attack
 
     # The same as cache.prefix but prefixed with "{namespace}:" if namespace option is set.
     # Like cache.prefix, this does not include the trailing ':'.
-    def prefix_with_namespace
+    def cache.prefix
       prefix = cache.prefix
       if namespace = cache.store&.options&.[](:namespace)
         prefix = "#{namespace}:#{prefix}"
@@ -25,7 +25,7 @@ class Rack::Attack
     end
 
     def prefixed_keys
-      all_keys.grep(/^#{prefix_with_namespace}:/)
+      all_keys.grep(/^#{cache.prefix}:/)
     end
 
     # AKA unprefixed_keys
@@ -36,7 +36,7 @@ class Rack::Attack
     end
 
     def unprefix_key(key)
-      key.sub "#{prefix_with_namespace}:", ''
+      key.sub "#{cache.prefix}:", ''
     end
 
     def to_h
@@ -249,7 +249,7 @@ class Rack::Attack
 
     class << self
       def prefixed_keys
-        Rack::Attack.all_keys.grep(/^#{Rack::Attack.prefix_with_namespace}:(allow|fail)2ban:/)
+        Rack::Attack.all_keys.grep(/^#{cache.prefix}:(allow|fail)2ban:/)
       end
 
       # AKA unprefixed_keys
@@ -271,7 +271,7 @@ class Rack::Attack
       end
 
       def full_key_prefix
-        "#{Rack::Attack.prefix_with_namespace}:#{key_prefix}"
+        "#{cache.prefix}:#{key_prefix}"
       end
     end
   end
@@ -321,7 +321,7 @@ class Rack::Attack
       end
 
       def full_key_prefix
-        "#{Rack::Attack.prefix_with_namespace}:#{key_prefix}"
+        "#{cache.prefix}:#{key_prefix}"
       end
 
     protected
