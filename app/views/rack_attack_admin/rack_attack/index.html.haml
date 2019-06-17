@@ -4,14 +4,14 @@
     %tr
       %th Key
       %th Banned IP
-      - if is_redis?
-        %th Expires
+      %th Expires
       %th Actions
 
   = render partial: 'rack_attack_admin/banned_ips/banned_ip',
     collection: Rack::Attack::BannedIps.keys, as: 'key',
     locals: { _:nil,
       full_key_prefix: Rack::Attack::BannedIps.full_key_prefix,
+      expires_column: true,
     }
 
   = form_for @default_banned_ip, url: [rack_attack_admin, :banned_ips] do |f|
@@ -27,16 +27,15 @@
     %tr
       %th Key
       %th Banned IP
-      - if is_redis?
+      - if has_ttl?
         %th Expires
       %th Actions
 
--#
-  = render partial: 'admin/rack_attack/banned_ips/banned_ip',
-    collection: @banned_ip_keys, as: 'key',
-    locals: { _:nil,
-      full_key_prefix: Rack::Attack::Fail2Ban.full_key_prefix,
-    }
+= render partial: 'rack_attack_admin/banned_ips/banned_ip',
+  collection: Rack::Attack::Fail2Ban.banned_ip_keys, as: 'key',
+  locals: { _:nil,
+    full_key_prefix: Rack::Attack::Fail2Ban.full_key_prefix,
+  }
 
 %h1 Throttle/Fail2Ban Count Keys
 %table.table.table-striped.mb-0
@@ -52,11 +51,19 @@
         (Time bucket)
       %th Actions
   - @counters_h.each do |key, value|
+    :ruby
+      parsed = Rack::Attack.parse_key(key)
+      value = value.to_i
+      name = Rack::Attack.humanize_key(key).sub(":#{parsed[:discriminator]}", '')
+
+      # We can get expires_in from redis or directly from the matched throttle rule
+      interval =
+        if has_ttl?
+          Rack::Attack.cache.store.ttl("#{Rack::Attack.cache.prefix}:#{key}")
+        elsif parsed and time_range = parsed[:time_range]
+          (time_range.end - Time.now)
+        end
     %tr
-      :ruby
-        parsed = Rack::Attack.parse_key(key)
-        value = value.to_i
-        name = Rack::Attack.humanize_key(key).sub(":#{parsed[:discriminator]}", '')
       %td
         = name
         -# if parsed and rule = parsed[:rule]
@@ -70,26 +77,25 @@
         = value
         - if limit
           = "/#{limit}"
+          <br/>
+          - if interval
+            %small
+              (#{interval})
 
       %td
-        -# We can get expires_in from redis or directly from the mached throttle rule
-        :ruby
-          interval =
-            if is_redis?
-              Rack::Attack.cache.store.ttl("#{Rack::Attack.cache.prefix}:#{key}")
-            elsif parsed and time_range = parsed[:time_range]
-              (time_range.end - Time.now)
-            end
         - if interval
-          in #{ActiveSupport::Duration.build(interval)&.human_str}<br/>
+          - if interval < 0
+            expired<br/>
+          - elsif interval
+            in #{ActiveSupport::Duration.build(interval)&.human_str}<br/>
 
-        - if parsed and time_range = parsed[:time_range]
-          %small
-            (#{  time_range.begin.to_s(:time_with_s)}
-            %span><
-              \-
-            #{time_range.end  .to_s(:time_with_s)}
-            \= #{time_range.duration&.human_str})
+          - if parsed and time_range = parsed[:time_range]
+            %small
+              (#{  time_range.begin.to_s(:time_with_s)}
+              %span><
+                \-
+              #{time_range.end  .to_s(:time_with_s)}
+              \= #{time_range.duration&.human_str})
 
       %td= link_to 'Delete', rack_attack_admin.key_path(key), method: :delete, class: 'btn'
 .current_time.mb-2 (Current time: #{Time.now.to_s(:time_with_s)})

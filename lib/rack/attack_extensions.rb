@@ -20,7 +20,7 @@ class Rack::Attack
         # Redis object unfortunately returns keys with namespace prefix in each key, so strip this
         # out (Redis::Store does this already; see store.data.keys above)
         if namespace = cache.store&.options&.[](:namespace)
-          keys.sub(/^#{namespace}/, '')
+          keys.map {|key| key.to_s.sub(/^#{namespace}:/, '') }
         else
           keys
         end

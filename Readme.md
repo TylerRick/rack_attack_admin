@@ -4,6 +4,8 @@ Lets you see the current state of all throttles and bans. Delete existing keys/b
 
 Inspired by: https://www.backerkit.com/blog/building-a-rackattack-dashboard/
 
+(screenshot)
+
 ## Installation
 
 Add this line to your application's `Gemfile`:
@@ -27,15 +29,30 @@ mount RackAttackAdmin::Engine, at: '/admin/rack_attack'
 
 Go to '/admin/rack_attack' in your browser!
 
+## Flags
+
+## Fail2Ban/Allow2Ban
+
+In order to allow your Fail2Ban/Allow2Ban rules to be introspected by this app, you must define them
+slightly differently than the upstream Rack::Attack suggest:
+
+...
+
 ## Compatibility
 
 This has mostly been tested with `Rack::Attack.cache.store` set to an instance
-of Redis::Store from the fantastic
-[redis-store](https://github.com/redis-store/redis-store) gem. (Used by
-ActiveSupport::Cache::RedisStore (from redis-activesupport gem))
+of `Redis::Store` from the fantastic
+[redis-store](https://github.com/redis-store/redis-store) gem. (Which is used by the
+`ActiveSupport::Cache::RedisStore` (from redis-activesupport/redis-rails gems))
 
 Now that Rails 5.2+ provides its own built-in `ActiveSupport::Cache::RedisCacheStore`, you may set
-`Rack::Attack.cache.store` to an instance of that store instead.
+`Rack::Attack.cache.store` to an instance of that store instead. However, some features will be
+unavailable in this dashboard because `RedisCacheStore` doesn't provide some of the features that
+`Redis::Store` provides, like the ability to check `ttl` for a key.
+
+To add this missing functionality, you can add this extension:
+```ruby
+```
 
 ## Contributing
 
