@@ -13,7 +13,21 @@ module RackAttackAdmin
 
     helper_method \
     def is_redis?
-      Rack::Attack.cache.respond.store.respond_to? :ttl
+      Rack::Attack.cache.respond.store.to_s.match?(/Redis/)
+    end
+
+    helper_method \
+    def redis
+      return unless is_redis?
+      store = Rack::Attack.cache.store
+      store = store.redis if store.respond_to?(:redis)
+      store = store.data  if store.respond_to?(:data)
+      store
+    end
+
+    helper_method \
+    def has_ttl?
+      !!redis
     end
 
     helper_method \

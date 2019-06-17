@@ -6,8 +6,65 @@ class Rack::Attack
   class << self
     extend Memoist
 
+    def all_keys
+      store, namespace = cache_store_and_namespace_to_strip
+      keys = store.keys
+      if namespace
+        keys.map {|key| key.to_s.sub(/^#{namespace}:/, '') }
+      else
+        keys
+      end
+    end
+
+    # The same as cache.prefix but prefixed with "{namespace}:" if namespace option is set and needs
+    # to be stripped from keys returned from store.keys.
+    # Like cache.prefix, this does not include the trailing ':'.
+    def prefix_with_namespace_to_strip
+      prefix = cache.prefix
+      store, namespace = cache_store_and_namespace_to_strip
+      if namespace
+        prefix = "#{namespace}:#{prefix}"
+      end
+      prefix
+    end
+
+    # The same as cache.prefix but prefixed with "{namespace}:" if namespace option is set.
+    # Needed when passing a key directly to a Redis command, like Redis#ttl, since Redis class
+    # doesn't know about namespacing.
+    def prefix_with_namespace
+      prefix = cache.prefix
+      if namespace = cache_namespace
+        prefix = "#{namespace}:#{prefix}"
+      end
+      prefix
+    end
+
+    def cache_namespace
+      cache.store&.options&.[](:namespace)
+    end
+
+    # Returns an array of [cache_store, namespace_to_strip]
+    # This will either be [a Redis::Store, nil] or
+    #                     [a Redis       , namespace_to_strip]
+    def cache_store_and_namespace_to_strip
+      store = cache.store
+      # Store can be a ActiveSupport::Cache::RedisCacheStore, a Redis::Store object, or a Redis object.
+      # If it is a ActiveSupport::Cache::RedisCacheStore, then we need to get the redis object in
+      # order to get keys from it.
+      store = store.redis if store.respond_to?(:redis)
+      if store.respond_to?(:data)  # Redis::Store already stripped namespaced
+        store = store.data
+        [store, nil]
+      else
+        # Redis object (which is all we have available in the case of a
+        # ActiveSupport::Cache::RedisCacheStore) unfortunately returns keys with namespace prefix in
+        # each key, so we need to strip this out (Redis::Store does this already; see store.data.keys above)
+        [store, cache_namespace]
+      end
+    end
+
     def prefixed_keys
-      cache.store.keys.grep(/^rack::attack:/)
+      all_keys.grep(/^#{cache.prefix}:/)
     end
 
     # AKA unprefixed_keys
@@ -54,9 +111,6 @@ class Rack::Attack
             :(?<discriminator>[^:]+)
         \Z/x
       )
-    end
-
-    class ParsedKey
     end
 
     # Reverse Cache#key_and_expiry:
@@ -231,7 +285,7 @@ class Rack::Attack
 
     class << self
       def prefixed_keys
-        cache.store.keys.grep(/^#{cache.prefix}:(allow|fail)2ban:/)
+        Rack::Attack.all_keys.grep(/^#{cache.prefix}:(allow|fail)2ban:/)
       end
 
       # AKA unprefixed_keys
@@ -273,7 +327,7 @@ class Rack::Attack
   class BannedIps
     class << self
       def prefixed_keys
-        cache.store.keys.grep(/^#{full_key_prefix}:/)
+        Rack::Attack.all_keys.grep(/^#{full_key_prefix}:/)
       end
 
       # Removes only the Rack::Attack.cache.prefix
