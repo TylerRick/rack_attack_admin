@@ -8,8 +8,9 @@ class Rack::Attack
 
     def all_keys
       store = cache.store
-      # Why does ActiveSupport::Cache::RedisCacheStore (from rails) not respond to keys directly,
-      # but ActiveSupport::Cache::RedisStore (from redis-rails) did?
+      # Let store be either a ActiveSupport::Cache::RedisCacheStore or a Redis object.
+      # If it is a ActiveSupport::Cache::RedisCacheStore, then we need to get the redis object in
+      # order to get keys from it.
       store = store.redis if store.respond_to?(:redis)
       store.keys
     end
