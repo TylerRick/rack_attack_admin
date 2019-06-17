@@ -12,7 +12,12 @@ class Rack::Attack
       # If it is a ActiveSupport::Cache::RedisCacheStore, then we need to get the redis object in
       # order to get keys from it.
       store = store.redis if store.respond_to?(:redis)
-      store.keys
+      keys = store.keys
+      if namespace = cache.store&.options&.[](:namespace)
+        keys.sub(/^#{namespace}/, '')
+      else
+        keys
+      end
     end
 
     # The same as cache.prefix but prefixed with "{namespace}:" if namespace option is set.
