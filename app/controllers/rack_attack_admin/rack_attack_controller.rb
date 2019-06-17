@@ -12,7 +12,12 @@ module RackAttackAdmin
     end
 
     def current_request
-      render json: current_request_rack_attack_stats
+      respond_to do |format|
+        format.json do
+          render json: current_request_rack_attack_stats
+        end
+        format.html
+      end
     end
   end
 end

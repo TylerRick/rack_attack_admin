@@ -93,24 +93,3 @@
 
       %td= link_to 'Delete', rack_attack_admin.key_path(key), method: :delete, class: 'btn'
 .current_time.mb-2 (Current time: #{Time.now.to_s(:time_with_s)})
-
-%h1 Flags
-%table.table.table-striped
-  %thead
-    %tr
-      %th Key
-      %th Value
-  %tr
-    %td cookies[:skip_safelist]
-    %td= cookies[:skip_safelist]
-
-%h1 Current Request
-%table.table.table-striped
-  %thead
-    %tr
-      %th Key
-      %th Value
-  - current_request_rack_attack_stats.each do |key, value|
-    %tr
-      %td= key
-      %td= value
