@@ -1,3 +1,4 @@
+- expires_column = local_assigns.key?(:expires_column) ? local_assigns[:expires_column] : has_ttl?
 %tr
   %td= key
 
@@ -6,9 +7,10 @@
     = ip
     (#{link_to 'Look up', "http://ip-lookup.net/?ip=#{ip}", target:'_blank'})
 
-  - if is_redis?
+  - if expires_column
     %td
-      - interval = Rack::Attack.cache.store.ttl("#{Rack::Attack.cache.prefix}:#{key}")
+      - if has_ttl?
+        - interval = redis.ttl("#{Rack::Attack.prefix_with_namespace}:#{key}")
       - if interval
         =# distance_of_time_in_words(interval)
         in #{ActiveSupport::Duration.build(interval)&.human_str}
