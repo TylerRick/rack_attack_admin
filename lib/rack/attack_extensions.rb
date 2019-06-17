@@ -6,8 +6,29 @@ class Rack::Attack
   class << self
     extend Memoist
 
+    def all_keys
+      store = cache.store
+      # Store can be a ActiveSupport::Cache::RedisCacheStore, a Redis::Store object, or a Redis object.
+      # If it is a ActiveSupport::Cache::RedisCacheStore, then we need to get the redis object in
+      # order to get keys from it.
+      store = store.redis if store.respond_to?(:redis)
+      if store.respond_to?(:data)
+        store = store.data
+        store.keys
+      else
+        keys = store.keys
+        # Redis object unfortunately returns keys with namespace prefix in each key, so strip this
+        # out (Redis::Store does this already; see store.data.keys above)
+        if namespace = cache.store&.options&.[](:namespace)
+          keys.sub(/^#{namespace}/, '')
+        else
+          keys
+        end
+      end
+    end
+
     def prefixed_keys
-      cache.store.keys.grep(/^rack::attack:/)
+      all_keys.grep(/^#{cache.prefix}:/)
     end
 
     # AKA unprefixed_keys
@@ -231,7 +252,7 @@ class Rack::Attack
 
     class << self
       def prefixed_keys
-        cache.store.keys.grep(/^#{cache.prefix}:(allow|fail)2ban:/)
+        Rack::Attack.all_keys.grep(/^#{cache.prefix}:(allow|fail)2ban:/)
       end
 
       # AKA unprefixed_keys
@@ -273,7 +294,7 @@ class Rack::Attack
   class BannedIps
     class << self
       def prefixed_keys
-        cache.store.keys.grep(/^#{full_key_prefix}:/)
+        Rack::Attack.all_keys.grep(/^#{full_key_prefix}:/)
       end
 
       # Removes only the Rack::Attack.cache.prefix

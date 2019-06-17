@@ -27,11 +27,15 @@ mount RackAttackAdmin::Engine, at: '/admin/rack_attack'
 
 Go to '/admin/rack_attack' in your browser!
 
-## Development
+## Compatibility
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+This has mostly been tested with `Rack::Attack.cache.store` set to an instance
+of Redis::Store from the fantastic
+[redis-store](https://github.com/redis-store/redis-store) gem. (Used by
+ActiveSupport::Cache::RedisStore (from redis-activesupport gem))
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Now that Rails 5.2+ provides its own built-in `ActiveSupport::Cache::RedisCacheStore`, you may set
+`Rack::Attack.cache.store` to an instance of that store instead.
 
 ## Contributing
 
