@@ -1,5 +1,5 @@
 module RackAttackAdmin
-  class ApplicationController < ::ApplicationController
+  class ApplicationController < ActionController::Base
     skip_authorization_check  if respond_to? :skip_authorization_check
     before_action :require_admin, except: [:current_request]  if method_defined?(:require_admin)
     before_action :toggle_flags
@@ -13,7 +13,7 @@ module RackAttackAdmin
 
     helper_method \
     def is_redis?
-      Rack::Attack.cache.respond.store.to_s.match?(/Redis/)
+      Rack::Attack.cache.store.to_s.match?(/Redis/)
     end
 
     helper_method \

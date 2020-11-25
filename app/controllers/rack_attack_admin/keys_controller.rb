@@ -5,7 +5,7 @@ module RackAttackAdmin
       unprefixed_key = Rack::Attack.unprefix_key(orig_key)
       Rack::Attack.cache.delete unprefixed_key
       flash[:success] = "Deleted #{unprefixed_key}"
-      redirect_to root_path
+      redirect_to rack_attack_admin.root_path
     end
   end
 end

@@ -23,7 +23,7 @@ module RackAttackAdmin
       else
         flash[:alert] = "Failed to add: #{ban.errors.full_messages.join('. ')}"
       end
-      redirect_to root_path
+      redirect_to rack_attack_admin.root_path
     end
   end
 end
